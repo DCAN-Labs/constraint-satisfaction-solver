@@ -29,7 +29,7 @@ class BacktrackingSearch(ABC):
             inferences = dict()
             if self.assignment_is_consistent(assignment, var, value):
                 assignment[var] = value
-                inferences = self.inference(var, value)
+                inferences = self.inference(assignment, var, value)
                 if inferences is not None:
                     assignment.extend(inferences)
                     result = self.backtrack(assignment)
@@ -44,7 +44,7 @@ class BacktrackingSearch(ABC):
         self.backtrack(dict())
 
     @abstractmethod
-    def inference(self, var, value):
+    def inference(self, assignment, var, value):
         pass
 
     def consistent(self, assignment):
@@ -69,9 +69,10 @@ class BacktrackingSearch(ABC):
 
         return self.consistent(extended_assignment)
 
+
 class AustraliaColoring(BacktrackingSearch):
-    def inference(self, var, value):
-        return None
+    def inference(self, assignment, var, value):
+        return self.forward_checking(assignment, var, value)
 
     def select_unassigned_variable(self, assignment):
         X = self.csp[0]
@@ -143,3 +144,6 @@ class AustraliaColoring(BacktrackingSearch):
                 if self.consistent(extended_assignment):
                     count += 1
             return count
+
+    def forward_checking(self, assignment, var, value):
+        pass
