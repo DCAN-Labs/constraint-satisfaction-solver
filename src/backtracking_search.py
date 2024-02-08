@@ -27,9 +27,7 @@ class BacktrackingSearch(ABC):
         var = self.select_unassigned_variable(assignment)
         for value in self.order_domain_values(var, assignment):
             inferences = dict()
-            extended_assignment = assignment.copy()
-            extended_assignment[var] = value
-            if self.consistent(extended_assignment):
+            if self.assignment_is_consistent(assignment, var, value):
                 assignment[var] = value
                 inferences = self.inference(var, value)
                 if inferences is not None:
@@ -65,6 +63,11 @@ class BacktrackingSearch(ABC):
                         return False
         return True
 
+    def assignment_is_consistent(self, assignment, var, value):
+        extended_assignment = assignment.copy()
+        extended_assignment[var] = value
+
+        return self.consistent(extended_assignment)
 
 class AustraliaColoring(BacktrackingSearch):
     def inference(self, var, value):
