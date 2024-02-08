@@ -27,13 +27,18 @@ class BacktrackingSearch(ABC):
         if self.complete(assignment):
             return assignment
         var = self.select_unassigned_variable(assignment)
-        for value in self.order_domain_values(var, assignment):
+        ordered_domain_values = self.order_domain_values(var, assignment)
+        for value in ordered_domain_values:
             inferences = dict()
             if self.assignment_is_consistent(assignment, var, value):
                 assignment[var] = value
                 inferences = self.inference(assignment, var, value)
                 if inferences is not None:
-                    assignment.extend(inferences)
+                    self.D = inferences
+                    for var in inferences.keys():
+                        vals = inferences[var]
+                        if len(vals) == 1:
+                            assignment[var] = vals[0]
                     result = self.backtrack(assignment)
                     if result is not None:
                         return result
@@ -43,7 +48,7 @@ class BacktrackingSearch(ABC):
         return None
 
     def backtracking_search(self):
-        self.backtrack(dict())
+        return self.backtrack(dict())
 
     @abstractmethod
     def inference(self, assignment, var, value):

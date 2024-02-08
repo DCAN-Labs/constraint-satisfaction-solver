@@ -7,9 +7,13 @@ class TestAustraliaColoring(TestCase):
     def test_backtracking(self):
         X, D, C = self.get_csp()
         australiaColoring = AustraliaColoring(X, D, C)
-        can_be_satisfied = australiaColoring.backtracking_search()
-        print(can_be_satisfied)
-        self.assertTrue(can_be_satisfied)
+        assignment = australiaColoring.backtracking_search()
+        keys = list(assignment)
+        n = len(keys)
+        for i in range(n):
+            for j in range(n):
+                if (keys[i], keys[j]) in C:
+                    self.assertTrue((assignment[keys[i]], assignment[keys[j]]) in C[(keys[i], keys[j])])
 
     @staticmethod
     def get_csp():
