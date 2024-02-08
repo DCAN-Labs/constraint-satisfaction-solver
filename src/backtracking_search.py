@@ -27,7 +27,9 @@ class BacktrackingSearch(ABC):
         var = self.select_unassigned_variable(assignment)
         for value in self.order_domain_values(var, assignment):
             inferences = dict()
-            if self.consistent(value, assignment):
+            extended_assignment = assignment.copy()
+            extended_assignment[var] = value
+            if self.consistent(extended_assignment):
                 assignment[var] = value
                 inferences = self.inference(var, value)
                 if inferences is not None:
@@ -48,14 +50,14 @@ class BacktrackingSearch(ABC):
         pass
 
     def consistent(self, assignment):
-        vars = list(assignment.keys())
-        n = len(vars)
+        variables = list(assignment.keys())
+        n = len(variables)
         C = self.csp[2]
         for i in range(n):
             for j in range(n):
                 if i == j:
                     continue
-                arc = (vars[i], vars[j])
+                arc = (variables[i], variables[j])
                 if arc in C:
                     valid_vals = C[arc]
                     actual_vals = (assignment[arc[0]], assignment[arc[1]])
@@ -119,9 +121,9 @@ class AustraliaColoring(BacktrackingSearch):
                 value_to_constraint_factor[value] = value_to_constraint_factor[value] * legal_values_left
         return value_to_constraint_factor
 
-    def order_domain_values(self, var, assignment):
-        sorted_d = \
-            dict(sorted(self.get_value_constraints(var, assignment), key=operator.itemgetter(1), reverse=True))
+    def order_domain_values(self, assignment, var):
+        constraints = self.get_value_constraints(var, assignment)
+        sorted_d = dict(sorted(constraints.items(), key=operator.itemgetter(1), reverse=True))
 
         return sorted_d.keys()
 

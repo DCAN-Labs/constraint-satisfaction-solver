@@ -61,4 +61,4 @@ class TestAustraliaColoring(TestCase):
         extended_assignment = partial_assignment.copy()
         extended_assignment[next_var] = 'red'
         actual_red_legal_values_left_count = australiaColoring.get_legal_values_left_count(extended_assignment, 'SA')
-        self.assertGreater(actual_red_legal_values_left_count, 0)
+        self.assertGreater(actual_red_legal_values_left_count, 1)
