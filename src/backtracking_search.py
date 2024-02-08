@@ -3,8 +3,10 @@ import operator
 
 
 class BacktrackingSearch(ABC):
-    def __init__(self, csp):
-        self.csp = csp
+    def __init__(self, X, D, C):
+        self.X = X
+        self.D = D
+        self.C = C
 
     @abstractmethod
     def select_unassigned_variable(self, assignment):
@@ -15,7 +17,7 @@ class BacktrackingSearch(ABC):
         pass
 
     def complete(self, assignment):
-        X = self.csp[0]
+        X = self.X
         for x in X:
             if x not in assignment.keys():
                 return False
@@ -50,7 +52,7 @@ class BacktrackingSearch(ABC):
     def consistent(self, assignment):
         variables = list(assignment.keys())
         n = len(variables)
-        C = self.csp[2]
+        C = self.C
         for i in range(n):
             for j in range(n):
                 if i == j:
@@ -75,9 +77,9 @@ class AustraliaColoring(BacktrackingSearch):
         return self.forward_checking(assignment, var, value)
 
     def select_unassigned_variable(self, assignment):
-        X = self.csp[0]
+        X = self.X
         min_remaining_values = -1
-        D = self.csp[1]
+        D = self.D
         for x in X:
             if x in assignment.keys():
                 continue
@@ -93,7 +95,7 @@ class AustraliaColoring(BacktrackingSearch):
                 if x in assignment.keys():
                     continue
                 degree = 0
-                C = self.csp[2]
+                C = self.C
                 for c in C.keys():
                     if x == c[0] or x == c[1]:
                         degree += 1
@@ -103,7 +105,7 @@ class AustraliaColoring(BacktrackingSearch):
             return max_degree_var
 
     def get_neighboring_variables(self, var):
-        C = self.csp[2]
+        C = self.C
         neighboring_variables = []
         for c in C.keys():
             if var == c[0]:
@@ -114,7 +116,7 @@ class AustraliaColoring(BacktrackingSearch):
 
     def get_value_constraints(self, assignment, variable):
         neighboring_variables = self.get_neighboring_variables(variable)
-        D = self.csp[1]
+        D = self.D
         possible_values = D[variable]
         value_to_constraint_factor = {d: 1 for d in D[variable]}
         for value in possible_values:
@@ -137,7 +139,7 @@ class AustraliaColoring(BacktrackingSearch):
             return 1
         else:
             count = 0
-            D = self.csp[1]
+            D = self.D
             for value in D[neighboring_variable]:
                 extended_assignment = assignment.copy()
                 extended_assignment[neighboring_variable] = value
@@ -145,5 +147,13 @@ class AustraliaColoring(BacktrackingSearch):
                     count += 1
             return count
 
-    def forward_checking(self, assignment, var, value):
-        pass
+    def forward_checking(self, assignment, x, value):
+        neighbors = self.get_neighboring_variables(x)
+        D_copy = self.D.copy()
+        for y in neighbors:
+            if y not in assignment.keys():
+                for d in self.D[y]:
+                    if ((x, y) in self.C and (value, d) not in self.C[(x, y)]) or \
+                            ((y, x) in self.C and (d, value) not in self.C[(y, x)]):
+                        D_copy[y].remove(d)
+        return D_copy
