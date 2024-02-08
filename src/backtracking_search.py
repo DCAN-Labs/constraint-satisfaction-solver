@@ -123,9 +123,10 @@ class AustraliaColoring(BacktrackingSearch):
 
     def order_domain_values(self, assignment, var):
         constraints = self.get_value_constraints(var, assignment)
-        sorted_d = dict(sorted(constraints.items(), key=operator.itemgetter(1), reverse=True))
+        sorted_d = sorted(constraints.items(), key=operator.itemgetter(1), reverse=True)
+        sorted_list = [v[0] for v in sorted_d]
 
-        return sorted_d.keys()
+        return sorted_list
 
     def get_legal_values_left_count(self, assignment, neighboring_variable):
         if neighboring_variable in assignment.keys():
