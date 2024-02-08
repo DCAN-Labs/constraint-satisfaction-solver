@@ -106,7 +106,7 @@ class AustraliaColoring(BacktrackingSearch):
                 neighboring_variables.append(c[0])
         return neighboring_variables
 
-    def get_least_constraining_value(self, assignment, variable):
+    def get_value_constraints(self, assignment, variable):
         neighboring_variables = self.get_neighboring_variables(variable)
         D = self.csp[1]
         possible_values = D[variable]
@@ -121,7 +121,7 @@ class AustraliaColoring(BacktrackingSearch):
 
     def order_domain_values(self, var, assignment):
         sorted_d = \
-            dict(sorted(self.get_least_constraining_value(var, assignment), key=operator.itemgetter(1), reverse=True))
+            dict(sorted(self.get_value_constraints(var, assignment), key=operator.itemgetter(1), reverse=True))
 
         return sorted_d.keys()
 

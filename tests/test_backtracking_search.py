@@ -43,9 +43,9 @@ class TestAustraliaColoring(TestCase):
         australiaColoring = AustraliaColoring(csp)
         partial_assignment = {'WA': 'red', 'NT': 'green'}
         next_var = 'Q'
-        actual_least_constraining_value = australiaColoring.get_least_constraining_value(partial_assignment, next_var)
-        expected_least_constraining_value = 'red'
-        self.assertEqual(expected_least_constraining_value, actual_least_constraining_value)
+        value_to_constraints = australiaColoring.get_value_constraints(partial_assignment, next_var)
+        self.assertEqual(value_to_constraints['blue'], 0)
+        self.assertGreater(value_to_constraints['red'], value_to_constraints['blue'])
 
     def test_get_legal_values_left_count(self):
         csp = self.get_csp()
