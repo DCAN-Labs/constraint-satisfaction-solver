@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+import random
 
 
-class CSP():
+class CSP:
     def __init__(self, variables, domains, constraints):
         self.variables = variables
         self.domains = domains
@@ -33,7 +34,6 @@ class MinConflicts(ABC):
                     min_conflicts = conflict_count
                     value = v
             current[var] = value
-        return None
 
     @abstractmethod
     def is_solution(self, csp, current):
@@ -48,55 +48,88 @@ class MinConflicts(ABC):
         pass
 
 
+def same_diag(pos0, pos1):
+    col0 = pos0[0]
+    row0 = pos0[1]
+    col1 = pos1[0]
+    row1 = pos1[1]
+    if col1 > col0 and row1 > row0:
+        return col1 - col0 == row1 - row0
+    elif col1 > col0 and row1 < row0:
+        return col1 - col0 == -(row1 - row0)
+    else:
+        return False
+
+
+def conflicts():
+    pass
+
+
+def same_row(row0, row1):
+    return row0 == row1
+
+
+def different_square(pos0, pos1):
+    return pos0 != pos1
+
+
+def same_col(col0, col1):
+    return col0 == col1
+
+
+def attacks(pos0, pos1):
+    col0 = pos0[0]
+    row0 = pos0[1]
+    col1 = pos1[0]
+    row1 = pos1[1]
+    return different_square((col0, row0), (col1, row1)) and \
+           (same_row(row0, row1) or same_col(col0, col1) or same_diag((col0, row0), (col1, row1)))
+
+
 class EightQueensProblem(MinConflicts):
+    def conflicts(self, var, v, current, csp):
+        pass
+
     def get_initial_complete_assignment(self, csp):
         return {i: 0 for i in range(8)}
 
     def is_solution(self, csp, current):
         for i in range(8):
             for j in range(i + 1, 8):
-                if self.attacks(i, current[i], j, current[j]):
+                if attacks((i, current[i]), (j, current[j])):
                     return False
         return True
 
     def randomly_conflicted_variable(self, assignment, variables):
-        pass
+        conflicted = []
+        for column in variables:
+            conflict_counts = self.get_conflict_counts(assignment, column)
+            if conflict_counts[column] > 0:
+                conflicted.append(column)
 
-    def conflicts(self, var, v, current, csp):
-        pass
-
-    def same_row(self, row0, row1):
-        return row0 == row1
-
-    def different_square(self, row0, col0, row1, col1):
-        return row0 != row1 or col0 != col1
-
-    def same_col(self, col0, col1):
-        return col0 == col1
-
-    def same_diag(self, row0, col0, row1, col1):
-        if row0 == row1 and col0 == col1:
-            return False
-        row_diff = max(row1, row0) - min(row1, row0)
-        col_diff = max(col1, col0) - min(col1, col0)
-
-        return row_diff == col_diff
-
-    def attacks(self, row0, col0, row1, col1):
-        return self.different_square(row0, col0, row1, col1) and \
-               (self.same_row(row0, row1) or self.same_col(col0, col1) or self.same_diag(row0, col0, row1, col1))
+                continue
+        return random.choice(conflicted)
 
     def get_conflict_counts(self, assignment, column):
-        conflict_counts = [-1] * 8
+        conflict_counts = [0] * 8
         for row in range(8):
-            count = 0
-            for col in range(8):
-                assigned_r = assignment[col]
-                if assigned_r == row:
-                    continue
-                if self.attacks(assigned_r, column, row, col):
-                    count += 1
-            conflict_counts[row] = count
-        conflict_counts[assignment[column]] = -1
+            self.get_conflict_counts_for_row(assignment, column, conflict_counts, row)
 
         return conflict_counts
+
+    def get_conflict_counts_for_row(self, assignment, column, conflict_counts, row):
+        for c in range(8):
+            if c == column:
+                continue
+            r = assignment[c]
+            if self.attacks((column, row), (c, r)):
+                conflict_counts[row] = conflict_counts[row] + 1
+        return conflict_counts[row]
+
+    def attacks(self, pos0, pos1):
+        col0 = pos0[0]
+        row0 = pos0[1]
+        col1 = pos1[0]
+        row1 = pos1[1]
+        return different_square((col0, row0), (col1, row1)) and \
+               (same_row(row0, row1) or same_col(col0, col1) or same_diag((col0, row0), (col1, row1)))
