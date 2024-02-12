@@ -82,8 +82,9 @@ def attacks(pos0, pos1):
     row0 = pos0[1]
     col1 = pos1[0]
     row1 = pos1[1]
-    return different_square((col0, row0), (col1, row1)) and \
-           (same_row(row0, row1) or same_col(col0, col1) or same_diag((col0, row0), (col1, row1)))
+    return \
+        different_square((col0, row0), (col1, row1)) and (same_row(row0, row1) or
+                                                          same_col(col0, col1) or same_diag((col0, row0), (col1, row1)))
 
 
 class EightQueensProblem(MinConflicts):
@@ -117,19 +118,12 @@ class EightQueensProblem(MinConflicts):
 
         return conflict_counts
 
-    def get_conflict_counts_for_row(self, assignment, column, conflict_counts, row):
+    @staticmethod
+    def get_conflict_counts_for_row(assignment, column, conflict_counts, row):
         for c in range(8):
             if c == column:
                 continue
             r = assignment[c]
-            if self.attacks((column, row), (c, r)):
+            if attacks((column, row), (c, r)):
                 conflict_counts[row] = conflict_counts[row] + 1
         return conflict_counts[row]
-
-    def attacks(self, pos0, pos1):
-        col0 = pos0[0]
-        row0 = pos0[1]
-        col1 = pos1[0]
-        row1 = pos1[1]
-        return different_square((col0, row0), (col1, row1)) and \
-               (same_row(row0, row1) or same_col(col0, col1) or same_diag((col0, row0), (col1, row1)))

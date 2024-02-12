@@ -1,7 +1,7 @@
 import itertools
 from unittest import TestCase
 
-from min_conflicts import EightQueensProblem, CSP
+from min_conflicts import EightQueensProblem, CSP, attacks
 
 
 class TestMinConflicts(TestCase):
@@ -10,10 +10,9 @@ class TestMinConflicts(TestCase):
         variables = list(range(8))
         domains = {range(8): range(8)}
         constraints = \
-            {(col0, col1):
-                 [[row0, row1] for row0, row1 in itertools.product(range(8), repeat=2)
-                  if not eight_queens_problem.attacks((col0, row0), (col1, row1))] for col0, col1 in
-             itertools.product(range(8), repeat=2)}
+            {(col0, col1): [[row0, row1] for row0, row1 in itertools.product(range(8), repeat=2)
+                            if not attacks((col0, row0), (col1, row1))]
+             for col0, col1 in itertools.product(range(8), repeat=2)}
         csp = CSP(variables, domains, constraints)
         solution = eight_queens_problem.min_conflicts(csp, 64)
         print(solution)
@@ -35,7 +34,6 @@ class TestMinConflicts(TestCase):
         self.assertListEqual(expected_values, actual_values)
 
     def test_attacks(self):
-        eight_queens_problem = EightQueensProblem()
         assignments = [6, 3, 1, 4, 7, 5, 2, 6]
         col0 = 5
         row0 = 3
@@ -46,7 +44,7 @@ class TestMinConflicts(TestCase):
                     continue
                 if col1 == col0:
                     continue
-                conflict = eight_queens_problem.attacks((col0, row0), (col1, row1))
+                conflict = attacks((col0, row0), (col1, row1))
                 if [col1, row1] in conflicts:
                     conflict_sentence = "Should conflict"
                 else:
