@@ -56,7 +56,11 @@ def same_diag(pos0, pos1):
     if col1 > col0 and row1 > row0:
         return col1 - col0 == row1 - row0
     elif col1 > col0 and row1 < row0:
-        return col1 - col0 == -(row1 - row0)
+        return col1 - col0 == row0 - row1
+    elif col1 < col0 and row1 < row0:
+        return col0 - col1 == row0 - row1
+    elif col1 < col0 and row1 > row0:
+        return col0 - col1 == row1 - row0
     else:
         return False
 
@@ -104,26 +108,26 @@ class EightQueensProblem(MinConflicts):
     def randomly_conflicted_variable(self, assignment, variables):
         conflicted = []
         for column in variables:
-            conflict_counts = self.get_conflict_counts(assignment, column)
-            if conflict_counts[column] > 0:
+            conflict_counts = self.get_conflict_counts_for_row(assignment, column, assignment[column])
+            if conflict_counts > 0:
                 conflicted.append(column)
 
-                continue
         return random.choice(conflicted)
 
     def get_conflict_counts(self, assignment, column):
         conflict_counts = [0] * 8
         for row in range(8):
-            self.get_conflict_counts_for_row(assignment, column, conflict_counts, row)
+            conflict_counts[row] = self.get_conflict_counts_for_row(assignment, column, row)
 
         return conflict_counts
 
     @staticmethod
-    def get_conflict_counts_for_row(assignment, column, conflict_counts, row):
+    def get_conflict_counts_for_row(assignment, column, row):
+        conflict_counts = 0
         for c in range(8):
             if c == column:
                 continue
             r = assignment[c]
             if attacks((column, row), (c, r)):
-                conflict_counts[row] = conflict_counts[row] + 1
-        return conflict_counts[row]
+                conflict_counts += 1
+        return conflict_counts

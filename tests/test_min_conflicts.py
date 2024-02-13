@@ -26,9 +26,9 @@ class TestMinConflicts(TestCase):
         self.assertListEqual(expected_values, actual_values)
 
     def test_get_conflict_counts_2(self):
-        assignments = [6, 3, 1, 4, 7, 5, 2, 6]
+        assignments = [6, 3, 1, 4, 7, 5, 2, 5]
         col = 5
-        expected_values = [0, 3, 2, 3, 2, -1, 3, 3]
+        expected_values = [0, 3, 2, 3, 2, 1, 3, 3]
         eight_queens_problem = EightQueensProblem()
         actual_values = eight_queens_problem.get_conflict_counts(assignments, col)
         self.assertListEqual(expected_values, actual_values)
@@ -53,11 +53,16 @@ class TestMinConflicts(TestCase):
                                  f'{conflict_sentence}: [({col1}, {row1})]: {conflict}')
 
     def test_get_conflict_counts_for_row(self):
-        assignments = [6, 3, 1, 4, 7, 1, 2, 6]
+        assignments = [6, 3, 1, 4, 7, 5, 2, 5]
         col = 5
         eight_queens_problem = EightQueensProblem()
-        conflict_counts = [0] * 8
         row = 3
-        actual_value = eight_queens_problem.get_conflict_counts_for_row(assignments, col, conflict_counts, row)
+        actual_value = eight_queens_problem.get_conflict_counts_for_row(assignments, col, row)
         expected_value = 3
         self.assertEqual(actual_value, expected_value)
+
+    def test_same_diag(self):
+        self.assertTrue((0, 0), (7, 7))
+        self.assertTrue((7, 7), (0, 0))
+        self.assertTrue((0, 7), (7, 0))
+        self.assertTrue((7, 0), (0, 7))
