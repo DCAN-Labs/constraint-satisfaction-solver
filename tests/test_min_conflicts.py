@@ -1,7 +1,8 @@
 import itertools
 from unittest import TestCase
 
-from min_conflicts import EightQueensProblem, CSP, attacks
+from csp import CSP
+from min_conflicts import EightQueensProblem, attacks
 
 
 class TestMinConflicts(TestCase):

@@ -1,8 +1,29 @@
+import itertools
 import random
 
 
-def topological_sort(variables, root):
-    pass
+def concatenate(*lists):
+    return itertools.chain(*lists)
+
+
+def topological_sort(tree, root):
+    if len(tree) == 0:
+        return []
+    else:
+        links_to_recurse_on = [link for link in tree if link[0] == root or link[1] == root]
+        result = [root]
+        for link in links_to_recurse_on:
+            reduced_tree = tree.copy()
+            reduced_tree.remove(link)
+            new_root = None
+            if root == link[0]:
+                new_root = link[1]
+            elif root == link[1]:
+                new_root = link[0]
+            rec_result = topological_sort(reduced_tree, new_root)
+            result += rec_result
+
+        return result
 
 
 def parent(variable):
