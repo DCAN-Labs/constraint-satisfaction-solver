@@ -27,13 +27,19 @@ class MinConflicts(ABC):
                 return current
             var = self.randomly_conflicted_variable(current, csp.variables)
             min_conflicts = -1
-            value = None
+            vs = []
             for v in csp.domains[var]:
                 conflict_count = self.conflicts(var, v, current, csp)
-                if min_conflicts == -1 or conflict_count < min_conflicts:
+                if min_conflicts == -1 or conflict_count <= min_conflicts:
                     min_conflicts = conflict_count
-                    value = v
+            for v in csp.domains[var]:
+                conflict_count = self.conflicts(var, v, current, csp)
+                if conflict_count == min_conflicts:
+                    vs.append(v)
+            value = random.choice(vs)
+
             current[var] = value
+        return None
 
     @abstractmethod
     def is_solution(self, csp, current):
@@ -93,7 +99,11 @@ def attacks(pos0, pos1):
 
 class EightQueensProblem(MinConflicts):
     def conflicts(self, var, v, current, csp):
-        pass
+        current_copy = current.copy()
+        current_copy[var] = v
+        count = self.get_conflict_counts_for_row(current_copy, var, v)
+
+        return count
 
     def get_initial_complete_assignment(self, csp):
         return {i: 0 for i in range(8)}

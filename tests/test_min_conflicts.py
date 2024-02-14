@@ -8,7 +8,9 @@ class TestMinConflicts(TestCase):
     def test_min_conflicts(self):
         eight_queens_problem = EightQueensProblem()
         variables = list(range(8))
-        domains = {range(8): range(8)}
+        domains = dict()
+        for i in range(8):
+            domains[i] = list(range(8))
         constraints = \
             {(col0, col1): [[row0, row1] for row0, row1 in itertools.product(range(8), repeat=2)
                             if not attacks((col0, row0), (col1, row1))]
