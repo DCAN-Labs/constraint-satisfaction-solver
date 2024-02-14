@@ -2,13 +2,6 @@ from abc import ABC, abstractmethod
 import random
 
 
-class CSP:
-    def __init__(self, variables, domains, constraints):
-        self.variables = variables
-        self.domains = domains
-        self.constraints = constraints
-
-
 class MinConflicts(ABC):
     @abstractmethod
     def get_initial_complete_assignment(self, csp):
