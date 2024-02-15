@@ -1,6 +1,7 @@
 import itertools
 import random
 
+from CC import CC
 from Graph import Graph
 
 
@@ -60,11 +61,12 @@ def tree_csp_solver(csp):
     graph: Graph = Graph(len(csp.variables))
     for edge in [c for c in csp.constraints.keys()]:
         graph.add_edge(csp.variables.index(edge[0]), csp.variables.index(edge[1]))
+    cc: CC = CC(graph)
     n = len(csp.variables)
     assignment = dict()
     root = random.choice(csp.variables)
-    tree = [c[0] for c in csp.constraints]
-    connected_component_count: int = graph.v
+    tree = [c for c in csp.constraints]
+    connected_component_count: int = cc.count
     sub_csps = []
     for i in range(connected_component_count):
         sub_csps[i] = get_csp(i)

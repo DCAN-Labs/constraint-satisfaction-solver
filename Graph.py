@@ -10,8 +10,8 @@ class Graph:
             self.adj.append([])
 
     def add_edge(self, v: int, w: int):
-        self.adj[v].append(v)
-        self.adj[w].append(w)
+        self.adj[v].append(w)
+        self.adj[w].append(v)
         self.e += 1
 
     def adj(self, v: int):
