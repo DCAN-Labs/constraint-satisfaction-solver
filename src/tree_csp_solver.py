@@ -58,9 +58,7 @@ def tree_csp_solver(csp):
     :param csp: a CSP with components X, D, C
     :return: a solution, or failure
     """
-    graph: Graph = Graph(len(csp.variables))
-    for edge in [c for c in csp.constraints.keys()]:
-        graph.add_edge(csp.variables.index(edge[0]), csp.variables.index(edge[1]))
+    graph = create_graph_from_csp(csp)
     cc: CC = CC(graph)
     n = len(csp.variables)
     assignment = dict()
@@ -82,3 +80,10 @@ def tree_csp_solver(csp):
             else:
                 return None
         return assignment
+
+
+def create_graph_from_csp(csp):
+    graph: Graph = Graph(len(csp.variables))
+    for edge in [c for c in csp.constraints.keys()]:
+        graph.add_edge(csp.variables.index(edge[0]), csp.variables.index(edge[1]))
+    return graph
