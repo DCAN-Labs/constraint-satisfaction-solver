@@ -58,8 +58,8 @@ def tree_csp_solver(csp):
     :return: a solution, or failure
     """
     graph: Graph = Graph(len(csp.variables))
-    for edge in [c[0] for c in csp.constraints]:
-        graph.add_edge(edge[0], edge[1])
+    for edge in [c for c in csp.constraints.keys()]:
+        graph.add_edge(csp.variables.index(edge[0]), csp.variables.index(edge[1]))
     n = len(csp.variables)
     assignment = dict()
     root = random.choice(csp.variables)
