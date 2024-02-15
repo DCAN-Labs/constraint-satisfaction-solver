@@ -3,6 +3,7 @@ import random
 
 from CC import CC
 from Graph import Graph
+from csp import CSP
 
 
 def concatenate(*lists):
@@ -47,8 +48,24 @@ def decompose_into_disjoint_trees(csp):
     pass
 
 
-def get_csp(v):
-    pass
+def get_sub_csp(cc: CC, csp: CSP, v: int) -> CSP:
+    sub_variables = []
+    for i in range(len(csp.variables)):
+        csp_variable: str = csp.variables[i]
+        if cc.id[i] == v:
+            sub_variables.append(csp_variable)
+    sub_domains = dict()
+    sub_constraints = dict()
+    for variable in sub_variables:
+        sub_domains[variable] = csp.domains[variable]
+    for i in range(len(sub_variables)):
+        for j in range(len(sub_variables)):
+            key = (sub_variables[i], sub_variables[j])
+            if key in csp.constraints.keys():
+                sub_constraints[key] = csp.constraints[key]
+    csp: CSP = CSP(sub_variables, sub_domains, sub_constraints)
+
+    return csp
 
 
 def tree_csp_solver(csp):
@@ -67,7 +84,7 @@ def tree_csp_solver(csp):
     connected_component_count: int = cc.count
     sub_csps = []
     for i in range(connected_component_count):
-        sub_csps[i] = get_csp(i)
+        sub_csps[i] = get_sub_csp(cc, csp, i)
         csp.variables = topological_sort(csp.variables, tree, root)
         for j in range(n, 1, -1):
             arc_consistent = make_arc_consistent(parent(csp.variables[j]), csp.variables[j])
