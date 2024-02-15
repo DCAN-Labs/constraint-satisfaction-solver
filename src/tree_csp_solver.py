@@ -1,6 +1,8 @@
 import itertools
 import random
 
+from Graph import Graph
+
 
 def concatenate(*lists):
     return itertools.chain(*lists)
@@ -40,6 +42,14 @@ def any_consistent_value(domain):
     pass
 
 
+def decompose_into_disjoint_trees(csp):
+    pass
+
+
+def get_csp(v):
+    pass
+
+
 def tree_csp_solver(csp):
     """
     The TREE-CSP-SOLVER algorithm for solving tree-structured CSPs.  If the CSP has a solution, we will find it in
@@ -47,18 +57,26 @@ def tree_csp_solver(csp):
     :param csp: a CSP with components X, D, C
     :return: a solution, or failure
     """
+    graph: Graph = Graph(len(csp.variables))
+    for edge in [c[0] for c in csp.constraints]:
+        graph.add_edge(edge[0], edge[1])
     n = len(csp.variables)
     assignment = dict()
     root = random.choice(csp.variables)
-    csp.variables = topological_sort(csp.variables, root)
-    for j in range(n, 1, -1):
-        arc_consistent = make_arc_consistent(parent(csp.variables[j]), csp.variables[j])
-        if not arc_consistent:
-            return None
-    for i in range(n):
-        consistent_value = any_consistent_value(csp.domains[i])
-        if consistent_value:
-            assignment[csp.variables[i]] = consistent_value
-        else:
-            return None
-    return assignment
+    tree = [c[0] for c in csp.constraints]
+    connected_component_count: int = graph.v
+    sub_csps = []
+    for i in range(connected_component_count):
+        sub_csps[i] = get_csp(i)
+        csp.variables = topological_sort(csp.variables, tree, root)
+        for j in range(n, 1, -1):
+            arc_consistent = make_arc_consistent(parent(csp.variables[j]), csp.variables[j])
+            if not arc_consistent:
+                return None
+        for j in range(n):
+            consistent_value = any_consistent_value(csp.domains[j])
+            if consistent_value:
+                assignment[csp.variables[j]] = consistent_value
+            else:
+                return None
+        return assignment
