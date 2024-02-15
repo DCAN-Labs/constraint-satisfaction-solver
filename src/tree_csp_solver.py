@@ -6,9 +6,9 @@ def concatenate(*lists):
     return itertools.chain(*lists)
 
 
-def topological_sort(tree, root):
-    if len(tree) == 0:
-        return []
+def topological_sort(variables, tree, root):
+    if len(variables) == 0:
+        return [root]
     else:
         links_to_recurse_on = [link for link in tree if link[0] == root or link[1] == root]
         result = [root]
@@ -20,7 +20,9 @@ def topological_sort(tree, root):
                 new_root = link[1]
             elif root == link[1]:
                 new_root = link[0]
-            rec_result = topological_sort(reduced_tree, new_root)
+            new_variables = variables.copy()
+            new_variables.remove(root)
+            rec_result = topological_sort(new_variables, reduced_tree, new_root)
             result += rec_result
 
         return result

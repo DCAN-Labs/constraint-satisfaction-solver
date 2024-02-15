@@ -24,5 +24,17 @@ class TreeCSPSolverTest(TestCase):
         tree = [['A', 'B'], ['B', 'C'], ['B', 'D'], ['D', 'E'], ['D', 'F']]
         root = 'A'
         expected_result = ['A', 'B', 'C', 'D', 'E', 'F']
-        actual_result = topological_sort(tree, root)
+        variables = ['A', 'B', 'C', 'D', 'E', 'F']
+        actual_result = topological_sort(variables, tree, root)
+        self.assertListEqual(expected_result, actual_result)
+
+    def test_topological_sort_2(self):
+        tree0 = [['NSW', 'V'], ['NT', 'Q'], ['NSW', 'Q'], ['NT', 'WA']]
+        root0 = 'WA'
+        tree1 = []
+        root1 = 'T'
+        expected_result = ['WA', 'NT', 'Q', 'NSW', 'V', 'T']
+        variables0 = ['NSW', 'NT', 'Q', 'T', 'V', 'WA']
+        variables1 = ['T']
+        actual_result = topological_sort(variables0, tree0, root0) + topological_sort(variables1, tree1, root1)
         self.assertListEqual(expected_result, actual_result)
