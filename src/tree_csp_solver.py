@@ -1,5 +1,4 @@
 import itertools
-import random
 
 from CC import CC
 from Graph import Graph
@@ -14,10 +13,11 @@ def topological_sort(variables, tree, root):
     if len(variables) == 0:
         return [root]
     else:
-        links_to_recurse_on = [link for link in tree if link[0] == root or link[1] == root]
+        tree_list = list(tree)
+        links_to_recurse_on = [link for link in tree_list if link[0] == root or link[1] == root]
         result = [root]
         for link in links_to_recurse_on:
-            reduced_tree = tree.copy()
+            reduced_tree = tree_list.copy()
             reduced_tree.remove(link)
             new_root = None
             if root == link[0]:
@@ -77,26 +77,24 @@ def tree_csp_solver(csp):
     """
     graph = create_graph_from_csp(csp)
     cc: CC = CC(graph)
-    n = len(csp.variables)
-    assignment = dict()
-    root = random.choice(csp.variables)
-    tree = [c for c in csp.constraints]
     connected_component_count: int = cc.count
-    sub_csps = []
-    for i in range(connected_component_count):
-        sub_csps[i] = get_sub_csp(cc, csp, i)
-        csp.variables = topological_sort(csp.variables, tree, root)
-        for j in range(n, 1, -1):
-            arc_consistent = make_arc_consistent(parent(csp.variables[j]), csp.variables[j])
+    sub_csps = [get_sub_csp(cc, csp, i) for i in range(connected_component_count)]
+    assignment = dict()
+    for i in range(len(sub_csps)):
+        sub_csp = sub_csps[i]
+        sub_csp.variables = topological_sort(sub_csp.variables, sub_csp.constraints.keys(), sub_csp.variables[0])
+        n = len(sub_csp.variables)
+        for j in range(n - 1, 1, -1):
+            arc_consistent = make_arc_consistent(parent(sub_csp.variables[j]), sub_csp.variables[j])
             if not arc_consistent:
                 return None
         for j in range(n):
-            consistent_value = any_consistent_value(csp.domains[j])
+            consistent_value = any_consistent_value(sub_csp.domains[j])
             if consistent_value:
-                assignment[csp.variables[j]] = consistent_value
+                assignment[sub_csp.variables[j]] = consistent_value
             else:
                 return None
-        return assignment
+    return assignment
 
 
 def create_graph_from_csp(csp):
