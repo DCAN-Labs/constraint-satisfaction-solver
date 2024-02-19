@@ -32,8 +32,11 @@ def topological_sort(variables, tree, root):
         return result
 
 
-def parent(variable):
-    pass
+def parent(tree, topological_sorting, variable):
+    index = topological_sorting.index(variable)
+    for i in range(index - 1, 0, -1):
+        if (variable, topological_sorting[i]) in tree or (topological_sorting[i], variable) in tree:
+            return topological_sorting[i]
 
 
 def make_arc_consistent(parent_variable, variable):
@@ -85,7 +88,9 @@ def tree_csp_solver(csp):
         sub_csp.variables = topological_sort(sub_csp.variables, sub_csp.constraints.keys(), sub_csp.variables[0])
         n = len(sub_csp.variables)
         for j in range(n - 1, 1, -1):
-            arc_consistent = make_arc_consistent(parent(sub_csp.variables[j]), sub_csp.variables[j])
+            arc_consistent = \
+                make_arc_consistent(
+                    parent(sub_csp.constraints.keys(), sub_csp.variables, sub_csp.variables[j]), sub_csp.variables[j])
             if not arc_consistent:
                 return None
         for j in range(n):
