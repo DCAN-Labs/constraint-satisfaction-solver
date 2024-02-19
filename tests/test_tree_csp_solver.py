@@ -38,3 +38,11 @@ class TreeCSPSolverTest(TestCase):
         variables1 = ['T']
         actual_result = topological_sort(variables0, tree0, root0) + topological_sort(variables1, tree1, root1)
         self.assertListEqual(expected_result, actual_result)
+
+    def test_make_arc_consistent(self):
+        constraints = {('x', 'y'): [(0, 0), (1, 1), (2, 4), (3, 9)]}
+        domains = {'x': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'y': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}
+        variables = ['x', 'y', 'z']
+        csp = CSP(variables, domains, constraints)
+        arc_consistent_domain = csp.make_arc_consistent('x', 'y')
+        self.assertListEqual(arc_consistent_domain, [0, 1, 2, 3])
